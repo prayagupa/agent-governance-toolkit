@@ -4,8 +4,9 @@ These tests exercise five governance scenarios through production `agent_os`
 policy, prompt-injection, redaction, and sandbox APIs. External systems are
 represented by in-memory adtech, healthcare, and intake resources. Each
 policy-driven scenario keeps its YAML policy next to it (e.g.
-`scenarios/adtech.py` + `scenarios/adtech.yaml`), parsed by the SDK the way a
-customer would ship it. Every scenario runs against a real local Ollama model.
+`scenarios/adtech/test_adtech.py` + `scenarios/adtech/policy.yaml`), parsed by
+the SDK the way a customer would ship it. Every scenario runs against a real
+local Ollama model.
 
 ## Setup
 
@@ -52,7 +53,7 @@ always fails regardless of the participation result.
 The prompt-injection scenario intentionally blocks poisoned retrieval content
 before it reaches the model adapter. The PII scenario calls the model only after
 redaction and verifies that raw values are absent from model input, tool
-arguments, audit events, and artifacts.
+arguments, resource calls, and artifacts.
 
 ## Logging
 

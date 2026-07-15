@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -23,21 +23,9 @@ class ModelReply:
 
 
 @dataclass
-class AuditEvent:
-    scenario_id: str
-    decision: str
-    reason: str
-    agent_id: str
-    tool_name: str | None = None
-    rule_id: str | None = None
-    details: dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass
 class ScenarioResult:
     decision: str
     executed_tools: list[str]
-    audit_events: list[AuditEvent]
     model_inputs: list[str] = field(default_factory=list)
     tool_arguments: list[dict[str, Any]] = field(default_factory=list)
     participation_status: str = "exercised"
@@ -47,7 +35,6 @@ class ScenarioResult:
         return {
             "decision": self.decision,
             "executed_tools": self.executed_tools,
-            "audit_events": [asdict(event) for event in self.audit_events],
             "model_inputs": self.model_inputs,
             "tool_arguments": self.tool_arguments,
             "participation_status": self.participation_status,

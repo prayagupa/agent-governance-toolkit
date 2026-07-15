@@ -7,12 +7,11 @@ from __future__ import annotations
 from .assertions import RAW_SECRETS, assert_exercised, assert_no_raw_secrets
 from .governance import load_policy_evaluator, not_exercised_result, tool_schema
 from .logging_config import configure_model_logging
-from .models import AuditEvent, ModelReply, ScenarioResult, ToolCall, write_artifact
+from .models import ModelReply, ScenarioResult, ToolCall, write_artifact
 from .ollama import OllamaModel, extract_python, select_model
 from .resources import MockAdPlatform, MockIntakeProcessor, MockPatientRecords
 
 __all__ = [
-    "AuditEvent",
     "MockAdPlatform",
     "MockIntakeProcessor",
     "MockPatientRecords",

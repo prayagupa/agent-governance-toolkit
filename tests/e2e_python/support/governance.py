@@ -48,10 +48,9 @@ def not_exercised_result(
         _describe_reply(reply),
     )
     return ScenarioResult(
-        "not_exercised",
-        [],
-        [],
-        model_inputs,
+        decision="not_exercised",
+        executed_tools=[],
+        model_inputs=model_inputs,
         participation_status="not_exercised",
     )
 
