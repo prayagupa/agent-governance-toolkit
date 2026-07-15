@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -14,6 +15,15 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 AGENT_OS_SRC = REPO_ROOT / "agent-governance-python" / "agent-os" / "src"
 
 sys.path.insert(0, str(AGENT_OS_SRC))
+
+# Rewrite asserts in the shared assertion helpers for readable failures.
+pytest.register_assert_rewrite("support.assertions")
+
+
+@pytest.fixture
+def artifact_dir(tmp_path: Path) -> Path:
+    configured = os.environ.get("AGT_E2E_ARTIFACT_DIR")
+    return Path(configured) if configured else tmp_path / "artifacts" / "ollama"
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:

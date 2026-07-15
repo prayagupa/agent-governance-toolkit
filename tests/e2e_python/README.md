@@ -40,7 +40,7 @@ python3 -m venv .venv
   pytest pytest-timeout
 AGT_E2E_MODEL=llama3.1 \
 AGT_E2E_MODEL_ATTEMPTS=3 \
-.venv/bin/python -m pytest tests/e2e_python/test_top5.py -q
+.venv/bin/python -m pytest tests/e2e_python -q
 ```
 
 Model output is variable. For scenarios that need a specific action, the test
@@ -61,7 +61,7 @@ PII-like values are redacted before log records are written. Configure logging
 from the pytest command line:
 
 ```bash
-.venv/bin/python -m pytest tests/e2e_python/test_top5.py \
+.venv/bin/python -m pytest tests/e2e_python \
   --agt-e2e-log-model-io=summary \
   --agt-e2e-log-format=pretty \
   --agt-e2e-log-text-limit=1000 \
@@ -80,5 +80,5 @@ Set `AGT_E2E_ARTIFACT_DIR` to preserve JSON results:
 
 ```bash
 AGT_E2E_ARTIFACT_DIR=artifacts/e2e-python/ollama \
-.venv/bin/python -m pytest tests/e2e_python/test_top5.py -q
+.venv/bin/python -m pytest tests/e2e_python -q
 ```

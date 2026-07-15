@@ -18,8 +18,8 @@ from support import (
     tool_schema,
 )
 
-# Policy for this scenario lives next to it: scenarios/healthcare.yaml
-POLICY = Path(__file__).with_suffix(".yaml")
+# Policy for this scenario lives next to it in the package.
+POLICY = Path(__file__).with_name("policy.yaml")
 
 
 def run_healthcare() -> tuple[ScenarioResult, MockPatientRecords]:
