@@ -1,0 +1,85 @@
+name: Python E2E
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - "agent-governance-python/agent-os/**"
+      - "tests/e2e_python/**"
+      - ".github/workflows/e2e-python.yml"
+
+concurrency:
+  group: e2e-python-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  top5-ollama:
+    name: Top 5 Python E2E (Ollama)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      AGT_E2E_ARTIFACT_DIR: artifacts/e2e-python/ollama
+      AGT_E2E_MODEL: llama3.1
+      AGT_E2E_MODEL_ATTEMPTS: "3"
+      OLLAMA_VERSION: "0.5.7"
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install Python E2E dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install \
+            -e agent-governance-python/agent-os \
+            pytest \
+            pytest-timeout
+
+      - name: Start Ollama
+        run: |
+          set -euo pipefail
+          curl -fsSL https://ollama.com/install.sh | sh >/dev/null 2>&1
+          is_up() { curl -fsS "http://127.0.0.1:11434/api/version" >/dev/null 2>&1; }
+          up=0
+          for _ in $(seq 1 30); do
+            if is_up; then up=1; break; fi
+            sleep 2
+          done
+          if [ "$up" -ne 1 ]; then
+            ollama serve >/tmp/ollama.log 2>&1 &
+            for _ in $(seq 1 30); do
+              if is_up; then up=1; break; fi
+              sleep 2
+            done
+          fi
+          if [ "$up" -ne 1 ]; then
+            cat /tmp/ollama.log 2>/dev/null || true
+            exit 1
+          fi
+          ollama pull "$AGT_E2E_MODEL" >/dev/null 2>&1
+
+      - name: Run Top 5 with Ollama
+        run: |
+          set -euo pipefail
+          mkdir -p "$AGT_E2E_ARTIFACT_DIR"
+          python -m pytest tests/e2e_python/test_top5.py \
+            --junitxml="$AGT_E2E_ARTIFACT_DIR/junit.xml" \
+            -q
+
+      - name: Upload Ollama E2E artifacts
+        if: always()
+        uses: actions/upload-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.6
+        with:
+          name: e2e-python-ollama-artifacts
+          path: artifacts/e2e-python/ollama
+          if-no-files-found: warn
