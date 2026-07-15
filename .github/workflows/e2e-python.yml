@@ -3,12 +3,17 @@ name: Python E2E
 on:
   push:
     branches:
-      - main
+      - "**"
+    paths:
+      - "agent-governance-python/agent-os/**"
+      - "tests/e2e_python/**"
+      - ".github/workflows/e2e-python.yml"
   pull_request:
     paths:
       - "agent-governance-python/agent-os/**"
       - "tests/e2e_python/**"
       - ".github/workflows/e2e-python.yml"
+  workflow_dispatch: {}
 
 concurrency:
   group: e2e-python-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
