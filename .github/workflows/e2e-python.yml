@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - "**"
-    paths:
-      - "agent-governance-python/agent-os/**"
-      - "tests/e2e_python/**"
-      - ".github/workflows/e2e-python.yml"
   pull_request:
     paths:
       - "agent-governance-python/agent-os/**"
