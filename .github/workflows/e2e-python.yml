@@ -28,6 +28,7 @@ jobs:
       AGT_E2E_MODEL: llama3.1
       AGT_E2E_MODEL_ATTEMPTS: "3"
       OLLAMA_VERSION: "0.5.7"
+      OLLAMA_MODELS: /home/runner/.ollama/models
       PYTHONUTF8: "1"
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -46,10 +47,21 @@ jobs:
             pytest \
             pytest-timeout
 
+      - name: Cache Ollama model
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ${{ env.OLLAMA_MODELS }}
+          key: ollama-${{ runner.os }}-${{ env.OLLAMA_VERSION }}-${{ env.AGT_E2E_MODEL }}
+
       - name: Start Ollama
         run: |
           set -euo pipefail
           curl -fsSL https://ollama.com/install.sh | sh >/dev/null 2>&1
+          # Stop the auto-started system service so our own server uses
+          # $OLLAMA_MODELS (the cached, runner-owned model directory).
+          sudo systemctl stop ollama 2>/dev/null || true
+          mkdir -p "$OLLAMA_MODELS"
+          ollama serve >/tmp/ollama.log 2>&1 &
           is_up() { curl -fsS "http://127.0.0.1:11434/api/version" >/dev/null 2>&1; }
           up=0
           for _ in $(seq 1 30); do
@@ -57,16 +69,10 @@ jobs:
             sleep 2
           done
           if [ "$up" -ne 1 ]; then
-            ollama serve >/tmp/ollama.log 2>&1 &
-            for _ in $(seq 1 30); do
-              if is_up; then up=1; break; fi
-              sleep 2
-            done
-          fi
-          if [ "$up" -ne 1 ]; then
             cat /tmp/ollama.log 2>/dev/null || true
             exit 1
           fi
+          # Fast when the model is restored from cache (digest verify, no download).
           ollama pull "$AGT_E2E_MODEL" >/dev/null 2>&1
 
       - name: Run Top 5 with Ollama
