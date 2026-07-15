@@ -5,11 +5,11 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from agent_os.policies import PolicyDecision
 
 from support import (
-    MockAdPlatform,
     ScenarioResult,
     assert_exercised,
     load_policy_evaluator,
@@ -21,6 +21,14 @@ from support import (
 
 
 POLICY = Path(__file__).with_name("policy.yaml")
+
+
+class MockAdPlatform:
+    def __init__(self) -> None:
+        self.budget_changes: list[dict[str, Any]] = []
+
+    def increase_daily_budget(self, **arguments: Any) -> None:
+        self.budget_changes.append(arguments)
 
 
 def run_adtech() -> tuple[ScenarioResult, MockAdPlatform, PolicyDecision | None]:

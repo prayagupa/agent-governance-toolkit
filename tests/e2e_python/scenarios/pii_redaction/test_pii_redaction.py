@@ -1,6 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-"""PII scenario: redact sensitive input before the model, tool, and audit."""
+"""PII scenario: redact sensitive input before the model and tool."""
 
 from __future__ import annotations
 
@@ -12,7 +12,6 @@ from agent_os.mute_agent import MuteAgent, MutePolicy
 
 from support import (
     RAW_SECRETS,
-    MockIntakeProcessor,
     ScenarioResult,
     assert_exercised,
     assert_no_raw_secrets,
@@ -21,6 +20,14 @@ from support import (
     tool_schema,
     write_artifact,
 )
+
+
+class MockIntakeProcessor:
+    def __init__(self) -> None:
+        self.calls: list[dict[str, Any]] = []
+
+    def process_intake(self, **arguments: Any) -> None:
+        self.calls.append(arguments)
 
 
 def run_pii_redaction() -> tuple[ScenarioResult, MockIntakeProcessor]:

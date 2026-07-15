@@ -5,12 +5,12 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from agent_os.mute_agent import MuteAgent, MutePolicy
 from agent_os.policies import PolicyDecision
 
 from support import (
-    MockPatientRecords,
     ScenarioResult,
     assert_exercised,
     assert_no_raw_secrets,
@@ -23,6 +23,14 @@ from support import (
 
 
 POLICY = Path(__file__).with_name("policy.yaml")
+
+
+class MockPatientRecords:
+    def __init__(self) -> None:
+        self.note_updates: list[dict[str, Any]] = []
+
+    def update_visit_notes(self, **arguments: Any) -> None:
+        self.note_updates.append(arguments)
 
 
 def run_healthcare() -> tuple[
