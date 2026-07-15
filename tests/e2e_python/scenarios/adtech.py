@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from support import (
     AuditEvent,
     MockAdPlatform,
@@ -13,6 +15,9 @@ from support import (
     select_model,
     tool_schema,
 )
+
+# Policy for this scenario lives next to it: scenarios/adtech.yaml
+POLICY = Path(__file__).with_suffix(".yaml")
 
 
 def run_adtech() -> tuple[ScenarioResult, MockAdPlatform]:
@@ -49,7 +54,7 @@ def run_adtech() -> tuple[ScenarioResult, MockAdPlatform]:
             model.inputs,
         ), platform
 
-    evaluator = load_policy_evaluator("adtech")
+    evaluator = load_policy_evaluator(POLICY)
     decision = evaluator.evaluate({"tool_name": call.name, **call.arguments})
     if decision.allowed:
         platform.increase_daily_budget(**call.arguments)

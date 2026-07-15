@@ -13,9 +13,6 @@ from .logging_config import logger, redact_for_log, redact_log_text, truncate_lo
 from .models import ModelReply, ScenarioResult
 
 
-POLICY_DIR = Path(__file__).resolve().parent.parent / "policies"
-
-
 def tool_schema(name: str, description: str, properties: dict[str, Any]) -> dict[str, Any]:
     return {
         "type": "function",
@@ -31,9 +28,9 @@ def tool_schema(name: str, description: str, properties: dict[str, Any]) -> dict
     }
 
 
-def load_policy_evaluator(name: str) -> PolicyEvaluator:
-    """Load a customer-authored YAML policy and let the SDK parse it."""
-    document = PolicyDocument.from_yaml(POLICY_DIR / f"{name}.yaml")
+def load_policy_evaluator(policy_path: str | Path) -> PolicyEvaluator:
+    """Load a customer-authored YAML policy (next to the scenario) via the SDK."""
+    document = PolicyDocument.from_yaml(policy_path)
     return PolicyEvaluator(policies=[document])
 
 

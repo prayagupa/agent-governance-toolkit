@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from agent_os.mute_agent import MuteAgent, MutePolicy
 
 from support import (
@@ -15,6 +17,9 @@ from support import (
     select_model,
     tool_schema,
 )
+
+# Policy for this scenario lives next to it: scenarios/healthcare.yaml
+POLICY = Path(__file__).with_suffix(".yaml")
 
 
 def run_healthcare() -> tuple[ScenarioResult, MockPatientRecords]:
@@ -51,7 +56,7 @@ def run_healthcare() -> tuple[ScenarioResult, MockPatientRecords]:
             model.inputs,
         ), records
 
-    evaluator = load_policy_evaluator("healthcare")
+    evaluator = load_policy_evaluator(POLICY)
     decision = evaluator.evaluate({"tool_name": call.name, **call.arguments})
     if decision.allowed:
         records.update_visit_notes(**call.arguments)

@@ -2,9 +2,10 @@
 
 These tests exercise five governance scenarios through production `agent_os`
 policy, prompt-injection, redaction, and sandbox APIs. External systems are
-represented by in-memory adtech, healthcare, and intake resources. Policies are
-authored as YAML under `policies/` and parsed by the SDK, the way a customer would
-ship them. Every scenario runs against a real local Ollama model.
+represented by in-memory adtech, healthcare, and intake resources. Each
+policy-driven scenario keeps its YAML policy next to it (e.g.
+`scenarios/adtech.py` + `scenarios/adtech.yaml`), parsed by the SDK the way a
+customer would ship it. Every scenario runs against a real local Ollama model.
 
 ## Setup
 
