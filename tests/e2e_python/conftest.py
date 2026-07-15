@@ -5,16 +5,9 @@
 from __future__ import annotations
 
 import os
-import sys
 from pathlib import Path
 
 import pytest
-
-
-REPO_ROOT = Path(__file__).resolve().parents[2]
-AGENT_OS_SRC = REPO_ROOT / "agent-governance-python" / "agent-os" / "src"
-
-sys.path.insert(0, str(AGENT_OS_SRC))
 
 # Rewrite asserts in the shared assertion helpers for readable failures.
 pytest.register_assert_rewrite("support.assertions")
